@@ -286,7 +286,7 @@
                 <option value="payporterpro">PayPorterPro</option>
               </select>
             </div>
-            <div class="form-group mb-3">
+            <div class="form-group mb-3" id="versionGroup" style="display:none;">
               <label for="selVersion">İmza Detay Versiyonu</label>
               <select class="form-control" id="selVersion">
                 <option value="v1">Versiyon 1 (App Download Marketing)</option>
@@ -526,15 +526,12 @@
             const selectedBrandKey = $("#selBrand").val();
             const brand = brands[selectedBrandKey];
 
-            // Version restriction
-            const v1Option = $("#selVersion option[value='v1']");
-            if (brand.versionsAllowed.indexOf("v1") === -1) {
-              v1Option.prop("disabled", true);
-              if ($("#selVersion").val() === "v1") {
-                $("#selVersion").val("v2");
-              }
+            // Version selector visibility
+            if (selectedBrandKey === "kuikpara") {
+              $("#versionGroup").show();
             } else {
-              v1Option.prop("disabled", false);
+              $("#versionGroup").hide();
+              $("#selVersion").val("v2");
             }
             const selectedVersion = $("#selVersion").val();
 

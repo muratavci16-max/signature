@@ -283,8 +283,7 @@
               <select class="form-control" id="selBrand">
                 <option value="payporter">PayPorter</option>
                 <option value="kuikpara">Kuikpara</option>
-                <option value="kuikpos">Kuikpos</option>
-                <option value="commitup">CommitUp</option>
+                <option value="payporterpro">PayPorterPro</option>
               </select>
             </div>
             <div class="form-group mb-3">
@@ -366,11 +365,13 @@
                                       <a href="https://payporter.com.tr"
                                         style="color: #323e48; text-decoration: none; font-weight: 700;"
                                         id="textDomain">payporter.com.tr</a><br>
+                                      <span style="color: #6c757d;"><b>T:</b> <a href="tel:08508110077" style="color: #6c757d; text-decoration: none;">0850 811 00 77</a></span><br>
                                       <span id="textPhoneWrapper" style="display:none;"><b>M:</b> <a id="textPhoneVal"
                                           href="tel:" style="color: #6c757d; text-decoration: none;"></a><br></span>
-                                      <a href="mailto:destek@payporter.com.tr"
+                                      <a href="mailto:info@payporter.com.tr"
                                         style="color: #ee7623; text-decoration: none; font-weight: 700;"
-                                        id="textEmail">destek@payporter.com.tr</a>
+                                        id="textDefaultEmail">info@payporter.com.tr</a><br>
+                                      <span id="textPersonalEmailWrapper" style="display:none;"><a id="textPersonalEmail" href="mailto:" style="color: #6c757d; text-decoration: none;"></a></span>
                                     </td>
                                   </tr>
                                 </tbody>
@@ -496,32 +497,43 @@
               "name": "PayPorter",
               "logo": "img/payporter_logo.png",
               "domain": "payporter.com.tr",
-              "color": "#ee7623"
+              "color": "#ee7623",
+              "defaultEmail": "info@payporter.com.tr",
+              "versionsAllowed": ["v2"]
             },
             "kuikpara": {
               "name": "Kuikpara",
               "logo": "img/kuikpara_logo.png",
               "domain": "kuikpara.com.tr",
-              "color": "#ee7623"
+              "color": "#ee7623",
+              "defaultEmail": "kuikpara@payporter.com.tr",
+              "versionsAllowed": ["v1", "v2"]
             },
-            "kuikpos": {
-              "name": "Kuikpos",
-              "logo": "img/kuikpos_logo.png",
-              "domain": "kuikpos.com.tr",
-              "color": "#ee7623"
-            },
-            "commitup": {
-              "name": "CommitUp",
-              "logo": "img/commitup_logo.png",
-              "domain": "commitup.com.tr",
-              "color": "#683a8e"
+            "payporterpro": {
+              "name": "PayPorterPro",
+              "logo": "img/payporterpro_logo.png",
+              "domain": "payporterpro.com.tr",
+              "color": "#ee7623",
+              "defaultEmail": "info@payporterpro.com.tr",
+              "versionsAllowed": ["v2"]
             }
           };
 
           function updateSignature() {
             const selectedBrandKey = $("#selBrand").val();
-            const selectedVersion = $("#selVersion").val();
             const brand = brands[selectedBrandKey];
+
+            // Version restriction
+            const v1Option = $("#selVersion option[value='v1']");
+            if (brand.versionsAllowed.indexOf("v1") === -1) {
+              v1Option.prop("disabled", true);
+              if ($("#selVersion").val() === "v1") {
+                $("#selVersion").val("v2");
+              }
+            } else {
+              v1Option.prop("disabled", false);
+            }
+            const selectedVersion = $("#selVersion").val();
 
             // Update main logo and link
             $("#imgBrand").attr("src", brand.logo);
@@ -531,15 +543,11 @@
             // Update Color
             const brandColor = brand.color;
             $("#textTitle").css("color", brandColor);
-            $("#textEmail").css("color", brandColor);
+            $("#textDefaultEmail").css("color", brandColor);
             document.documentElement.style.setProperty('--primary-color', brandColor);
 
-            // Update email if empty/default
-            const emailInput = $("#txtEmail").val();
-            if (emailInput.length === 0) {
-              const defaultEmail = "destek@" + brand.domain;
-              $("#textEmail").text(defaultEmail).attr("href", "mailto:" + defaultEmail);
-            }
+            // Update default brand email (always shown)
+            $("#textDefaultEmail").text(brand.defaultEmail).attr("href", "mailto:" + brand.defaultEmail);
 
             // Update Detail Container
             let html = "";
@@ -579,8 +587,8 @@
               let logosListHtml = `<table border="0" cellspacing="0" cellpadding="0"><tr>`;
               let first = true;
 
-              // Define order as requested: PayPorter, KuikPara, KuikPos, CommitUp
-              const order = ["payporter", "kuikpara", "kuikpos", "commitup"];
+              // Define order as requested: PayPorter, KuikPara, PayPorterPro
+              const order = ["payporter", "kuikpara", "payporterpro"];
 
               order.forEach(key => {
                 if (key !== selectedBrandKey) {
@@ -594,7 +602,7 @@
                   let logoWidth = "auto";
                   let logoHeight = "24";
 
-                  if (key === 'payporter') {
+                  if (key === 'payporter' || key === 'payporterpro') {
                     logoHeight = "24";
                   }
 
@@ -633,9 +641,10 @@
           $("#txtEmail").keyup(function () {
             let val = $(this).val();
             if (val.length > 0) {
-              $("#textEmail").text(val).attr("href", "mailto:" + val);
+              $("#textPersonalEmailWrapper").show();
+              $("#textPersonalEmail").text(val).attr("href", "mailto:" + val);
             } else {
-              $("#textEmail").text("destek@payporter.com.tr").attr("href", "mailto:destek@payporter.com.tr");
+              $("#textPersonalEmailWrapper").hide();
             }
           });
 

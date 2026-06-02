@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <title>PayPorter Signature</title>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/png" href="https://payporter.com.tr/uploads/payporter_logo_2_7e4fd806af.png">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <style>
+    :root {
+      --primary-color: #ee7623;
+      --dark-color: #323e48;
+      --bg-color: #f4f7f9;
+      --card-bg: #ffffff;
+      --text-muted: #6c757d;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--dark-color);
+      min-height: 100vh;
+    }
+
+    .main-container {
+      max-width: 1100px;
+      margin: 40px auto;
+    }
+
+    .header-logo {
+      max-height: 60px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      background: var(--card-bg);
+      padding: 30px;
+      height: 100%;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      padding: 12px 15px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      height: auto;
+    }
+
+    select.form-control {
+      padding: 8px 15px;
+      line-height: 1.5;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(238, 118, 35, 0.1);
+      outline: none;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background-color: #d1611a;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(238, 118, 35, 0.3);
+    }
+
+    #signature_preview_wrapper {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      border: 1px dashed #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 250px;
+    }
+
+    .preview-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: block;
+      text-align: center;
+    }
+
+    .success {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(50, 62, 72, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .success.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .success-content {
+      background: white;
+      padding: 40px;
+      border-radius: 24px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      transform: translateY(20px);
+      transition: all 0.4s ease;
+    }
+
+    .success.active .success-content {
+      transform: translateY(0);
+    }
+
+    .success h4 {
+      color: var(--primary-color);
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+      border: none;
+      background: none;
+    }
+
+    /* Password Protection Styles */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      z-index: 9999;
+      transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .login-card {
+      background: white;
+      padding: 45px;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      width: 400px;
+      text-align: center;
+      transform: translateY(0);
+      transition: all 0.5s ease;
+    }
+
+    .login-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .login-overlay.hidden .login-card {
+      transform: translateY(-20px);
+    }
+
+    .login-logo {
+      max-height: 45px;
+      margin-bottom: 25px;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-8px);
+      }
+
+      75% {
+        transform: translateX(8px);
+      }
+    }
+
+    .shake-animation {
+      animation: shake 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Password Protection Layer -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <img src="https://payporter.com.tr/uploads/payporter_logo_2_7e4fd806af.png" alt="PayPorter" class="login-logo">
+      <h4 class="mb-4" style="font-weight: 800; letter-spacing: -0.5px;">Erişim Koruması</h4>
+      <p class="text-muted mb-4" style="font-size: 0.9rem;">Lütfen devam etmek için imza oluşturucu şifresini
+        girin.<br>Şifreyi <b>İK Departmanından</b> temin edebilirsiniz.</p>
+
+      <div class="form-group mb-4 text-left">
+        <label style="font-size: 0.75rem;">ŞİFRE</label>
+        <input type="password" class="form-control" id="accessPassword" placeholder="••••••••"
+          style="text-align: center; letter-spacing: 4px;">
+        <div id="loginError" class="text-danger mt-2 d-none"
+          style="font-size: 0.8rem; font-weight: 600; text-align: center;">
+          <i class="fas fa-exclamation-circle mr-1"></i> Geçersiz şifre!
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="loginBtn">SİSTEME GİRİŞ YAP</button>
+    </div>
+  </div>
+
+  <div class="success">
+    <div class="success-content text-center">
+      <button type="button" class="close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h4>İmzanız Hazır! 🚀</h4>
+      <div class="text-left mt-3">
+        <p>İmza şablonunuz başarıyla indirildi. Şimdi şu adımları takip edin:</p>
+        <ol>
+          <li>Dosya gezginine <b>%appdata%\Microsoft\Signatures\</b> yazıp Enter'a basın.</li>
+          <li>İndirdiğiniz <b>.htm</b> dosyasını bu klasöre yapıştırın.</li>
+          <li>Outlook'ta "İmzalar" kısmından yeni imzanızı seçin.</li>
+        </ol>
+      </div>
+      <button class="btn btn-primary mt-3" onclick="$('.success').removeClass('active')">ANLADIM</button>
+    </div>
+  </div>
+
+  <div class="container main-container">
+    <div class="text-center">
+      <img src="https://payporter.com.tr/uploads/payporter_logo_2_7e4fd806af.png" alt="PayPorter" class="header-logo" />
+      <h2 class="mb-5" style="font-weight: 800; letter-spacing: -1px;">E-Posta İmza Oluşturucu</h2>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-5 mb-4">
+        <div class="card">
+          <form>
+            <div class="form-group mb-3">
+              <label for="selBrand">Marka Seçimi</label>
+              <select class="form-control" id="selBrand">
+                <option value="payporter">PayPorter</option>
+                <option value="kuikpara">Kuikpara</option>
+                <option value="kuikpos">Kuikpos</option>
+                <option value="commitup">CommitUp</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="selVersion">İmza Detay Versiyonu</label>
+              <select class="form-control" id="selVersion">
+                <option value="v1">Versiyon 1 (App Download Marketing)</option>
+                <option value="v2">Versiyon 2 (Diğer Ürünler)</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="txtName">Ad Soyad</label>
+              <input type="text" class="form-control" id="txtName" maxlength="50" placeholder="Örn: Ahmet Yılmaz" />
+            </div>
+            <div class="form-group mb-3">
+              <label for="txtTitle">Ünvan</label>
+              <input type="text" class="form-control" id="txtTitle" maxlength="150"
+                placeholder="Örn: Pazarlama Müdürü" />
+            </div>
+            <div class="form-group mb-3">
+              <label for="txtEmail">E-Posta</label>
+              <input type="email" class="form-control" id="txtEmail" maxlength="150"
+                placeholder="ahmet.yilmaz@payporter.com" />
+            </div>
+            <div class="form-group mb-3">
+              <label for="txtPhone">Cep Telefonu (Opsiyonel)</label>
+              <input type="text" class="form-control" id="txtPhone" placeholder="+90 5XX XXX XX XX" />
+            </div>
+            <div class="form-group mb-4">
+              <label for="txtSignature">İmza Dosya Adı</label>
+              <input type="text" class="form-control" id="txtSignature" maxlength="50" placeholder="PayPorter_Imza" />
+            </div>
+            <button type="button" onclick="selectElementContents( document.getElementById('signature_container') );"
+              class="btn btn-primary">ŞABLONU İNDİR</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="card">
+          <span class="preview-label">CANLI ÖNİZLEME</span>
+          <div id="signature_preview_wrapper">
+            <div id="signature_container">
+              <table border="0" cellspacing="0" cellpadding="0"
+                style="font-family: 'DM Sans', Arial, sans-serif; color: #323e48;">
+                <tbody>
+                  <tr>
+                    <td valign="top"
+                      style="font-weight: 800; color: #323e48; font-size: 18px; line-height: 22px; padding-bottom: 2px;"
+                      id="textName">İsim Soyisim</td>
+                  </tr>
+                  <tr>
+                    <td valign="top" style="font-size: 14px; color: #ee7623; line-height: 18px; font-weight: 500;"
+                      id="textTitle">Ünvan</td>
+                  </tr>
+                  <tr>
+                    <td height="10"></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <table border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                          <tr>
+                            <td align="left" valign="middle" style="padding-right: 25px;">
+                              <a href="https://payporter.com.tr/" target="_blank" style="display: block;"
+                                id="linkBrand">
+                                <img src="https://payporter.com.tr/uploads/payporter_logo_2_7e4fd806af.png" width="130"
+                                  style="display: block; border: 0;" id="imgBrand">
+                              </a>
+                            </td>
+                            <td valign="middle" style="border-left: 1px solid #e0e0e0; padding-left: 25px;">
+                              <table border="0" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                  <tr>
+                                    <td style="font-size: 12px; color: #6c757d; line-height: 1.6; min-width: 250px;">
+                                      <a href="https://share.google/VeTNQKET31bVLT7bC" target="_blank"
+                                        style="color: #6c757d; text-decoration: none;">
+                                        Fulya Mh. Büyükdere Cd. Likör Yanı Sk. No:1/13<br>
+                                        Akabe Ticaret Merkezi Şişli – İstanbul
+                                      </a><br>
+                                      <a href="https://payporter.com.tr"
+                                        style="color: #323e48; text-decoration: none; font-weight: 700;"
+                                        id="textDomain">payporter.com.tr</a><br>
+                                      <span id="textPhoneWrapper" style="display:none;"><b>M:</b> <a id="textPhoneVal"
+                                          href="tel:" style="color: #6c757d; text-decoration: none;"></a><br></span>
+                                      <a href="mailto:destek@payporter.com.tr"
+                                        style="color: #ee7623; text-decoration: none; font-weight: 700;"
+                                        id="textEmail">destek@payporter.com.tr</a>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="30"></td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">
+                              <div id="detailContainer">
+                                <table border="0" cellspacing="0" cellpadding="0">
+                                  <tbody>
+                                    <tr>
+                                      <td>
+                                        <a href="https://apps.apple.com/tr/app/kuikpara/id1575514450?l=tr"
+                                          target="_blank">
+                                          <img src="img/App Store Download.png" height="32"
+                                            style="display: block; border: 0;">
+                                        </a>
+                                      </td>
+                                      <td width="10"></td>
+                                      <td>
+                                        <a href="https://play.google.com/store/apps/details?id=com.payporter.wallet&hl=tr"
+                                          target="_blank">
+                                          <img src="img/Google Play Download.png" height="32"
+                                            style="display: block; border: 0;">
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                <div style="height: 20px;"></div>
+                                <img src="img/brands.png" height="32" style="display: block; border: 0;">
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <style>
+        div#signature_container *::selection {
+          background: transparent !important;
+        }
+
+        .success {
+          position: fixed;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          margin: 0;
+          border: 0;
+          background: rgba(255, 255, 255, 0);
+          z-index: 1;
+          opacity: 0;
+          transition: all .5s;
+          visibility: hidden;
+        }
+
+        .success.active {
+          background: rgba(255, 255, 255, .95);
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .close {
+          position: absolute;
+          right: 80px;
+          top: 40px;
+          font-size: 40px;
+          outline: 0 !important;
+        }
+      </style>
+
+      <script src="jquery.min.js"></script>
+
+      <script>
+        $(document).ready(function () {
+          // Şifre Güvenliği (Base64 Obfuscation)
+          // Not: İleri seviye güvenlik için şifre kontrolü sunucu tarafında yapılmalıdır.
+          const _0x4f2 = "cGF5cG9ydGVyMjAyNg=="; // payporter2026
+
+          function checkAccess() {
+            const input = $("#accessPassword").val();
+            if (btoa(input) === _0x4f2) {
+              $("#loginOverlay").addClass("hidden");
+              setTimeout(() => {
+                $("#loginOverlay").remove();
+              }, 600);
+            } else {
+              $("#loginError").removeClass("d-none");
+              $("#accessPassword").addClass("is-invalid").val("").focus();
+
+              // Shake effect
+              $(".login-card").css("animation", "shake 0.4s ease-in-out");
+              setTimeout(() => {
+                $(".login-card").css("animation", "");
+              }, 400);
+            }
+          }
+
+          $("#loginBtn").on("click", checkAccess);
+          $("#accessPassword").on("keypress", function (e) {
+            if (e.which === 13) checkAccess();
+          });
+
+          const brands = {
+            "payporter": {
+              "name": "PayPorter",
+              "logo": "img/payporter_logo.png",
+              "domain": "payporter.com.tr",
+              "color": "#ee7623"
+            },
+            "kuikpara": {
+              "name": "Kuikpara",
+              "logo": "img/kuikpara_logo.png",
+              "domain": "kuikpara.com.tr",
+              "color": "#ee7623"
+            },
+            "kuikpos": {
+              "name": "Kuikpos",
+              "logo": "img/kuikpos_logo.png",
+              "domain": "kuikpos.com.tr",
+              "color": "#ee7623"
+            },
+            "commitup": {
+              "name": "CommitUp",
+              "logo": "img/commitup_logo.png",
+              "domain": "commitup.com.tr",
+              "color": "#683a8e"
+            }
+          };
+
+          function updateSignature() {
+            const selectedBrandKey = $("#selBrand").val();
+            const selectedVersion = $("#selVersion").val();
+            const brand = brands[selectedBrandKey];
+
+            // Update main logo and link
+            $("#imgBrand").attr("src", brand.logo);
+            $("#linkBrand").attr("href", "https://" + brand.domain + "/");
+            $("#textDomain").text(brand.domain).attr("href", "https://" + brand.domain);
+
+            // Update Color
+            const brandColor = brand.color;
+            $("#textTitle").css("color", brandColor);
+            $("#textEmail").css("color", brandColor);
+            document.documentElement.style.setProperty('--primary-color', brandColor);
+
+            // Update email if empty/default
+            const emailInput = $("#txtEmail").val();
+            if (emailInput.length === 0) {
+              const defaultEmail = "destek@" + brand.domain;
+              $("#textEmail").text(defaultEmail).attr("href", "mailto:" + defaultEmail);
+            }
+
+            // Update Detail Container
+            let html = "";
+            const brandsAsset = "img/brands.png";
+            const brandsHtml = `<img src="${brandsAsset}" height="32" style="display: block; border: 0;">`;
+
+            if (selectedVersion === "v1") {
+              html = `
+                <table border="0" cellspacing="0" cellpadding="0">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td>
+                              <a href="https://apps.apple.com/tr/app/kuikpara/id1575514450?l=tr" target="_blank">
+                                <img src="img/App Store Download.png" height="32" style="display: block; border: 0;">
+                              </a>
+                            </td>
+                            <td width="10"></td>
+                            <td>
+                              <a href="https://play.google.com/store/apps/details?id=com.payporter.wallet&hl=tr" target="_blank">
+                                <img src="img/Google Play Download.png" height="32" style="display: block; border: 0;">
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr><td height="20"></td></tr>
+                    <tr><td>${brandsHtml}</td></tr>
+                  </tbody>
+                </table>
+              `;
+            } else {
+              // Version 2: Other Brands (Row 1) + brands.png (Row 2)
+              let logosListHtml = `<table border="0" cellspacing="0" cellpadding="0"><tr>`;
+              let first = true;
+
+              // Define order as requested: PayPorter, KuikPara, KuikPos, CommitUp
+              const order = ["payporter", "kuikpara", "kuikpos", "commitup"];
+
+              order.forEach(key => {
+                if (key !== selectedBrandKey) {
+                  const b = brands[key];
+                  if (!first) {
+                    logosListHtml += `<td width="15"></td>`;
+                  }
+
+                  // For PayPorter logo in the list, we might want a specific size or asset
+                  let logoSrc = b.logo;
+                  let logoWidth = "auto";
+                  let logoHeight = "24";
+
+                  if (key === 'payporter') {
+                    logoHeight = "24";
+                  }
+
+                  logosListHtml += `<td><a href="https://${b.domain}/" target="_blank"><img src="${logoSrc}" height="${logoHeight}" style="display: block; border: 0;"></a></td>`;
+                  first = false;
+                }
+              });
+              logosListHtml += `</tr></table>`;
+
+              html = `
+                <table border="0" cellspacing="0" cellpadding="0">
+                  <tbody>
+                    <tr><td>${logosListHtml}</td></tr>
+                    <tr><td height="20"></td></tr>
+                    <tr><td>${brandsHtml}</td></tr>
+                  </tbody>
+                </table>
+              `;
+            }
+            $("#detailContainer").html(html);
+          }
+
+          $("#selBrand, #selVersion").on("change", updateSignature);
+          updateSignature(); // Initial call
+
+          $("#txtName").keyup(function () {
+            let val = $(this).val();
+            $("#textName").text(val.length > 0 ? val : "İsim Soyisim");
+          });
+
+          $("#txtTitle").keyup(function () {
+            let val = $(this).val();
+            $("#textTitle").text(val.length > 0 ? val : "Ünvan");
+          });
+
+          $("#txtEmail").keyup(function () {
+            let val = $(this).val();
+            if (val.length > 0) {
+              $("#textEmail").text(val).attr("href", "mailto:" + val);
+            } else {
+              $("#textEmail").text("destek@payporter.com.tr").attr("href", "mailto:destek@payporter.com.tr");
+            }
+          });
+
+          $("#txtPhone").keyup(function () {
+            let val = $(this).val();
+            if (val.length > 0) {
+              $("#textPhoneWrapper").show();
+              $("#textPhoneVal").text(val).attr("href", "tel:" + val.replace(/\s/g, ''));
+            } else {
+              $("#textPhoneWrapper").hide();
+            }
+          });
+
+          $(".close").on("click", function () {
+            $(".success").removeClass("active");
+          });
+        });
+
+        function selectElementContents(el) {
+          var body = document.body, range, sel;
+          if (document.createRange && window.getSelection) {
+            range = document.createRange();
+            sel = window.getSelection();
+            sel.removeAllRanges();
+            range.selectNodeContents(el);
+            sel.addRange(range);
+          }
+
+          $(".success").addClass("active");
+
+          var download_link = document.createElement('a');
+          var fileName = $("#txtSignature").val() || "PayPorter_Imza";
+          download_link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent('<html><head><meta charset="utf-8" /><style>body{margin:0;padding:0;}</style></head><body>' + el.innerHTML + '</body></html>');
+          download_link.download = fileName + ".htm";
+          document.body.appendChild(download_link);
+          download_link.click();
+          document.body.removeChild(download_link);
+        }
+      </script>
+
+</body>
+
+</html>

@@ -587,9 +587,12 @@
 
           $(".success").addClass("active");
 
+          var baseUrl = window.location.href.replace(/\/[^\/]*$/, '/');
+          var signatureHtml = el.innerHTML.replace(/src="img\//g, 'src="' + baseUrl + 'img/');
+
           var download_link = document.createElement('a');
           var fileName = $("#txtSignature").val() || "PayPorter_Imza";
-          download_link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent('<html><head><meta charset="utf-8" /><style>body{margin:0;padding:0;}</style></head><body>' + el.innerHTML + '</body></html>');
+          download_link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent('<html><head><meta charset="utf-8" /><style>body{margin:0;padding:0;}</style></head><body>' + signatureHtml + '</body></html>');
           download_link.download = fileName + ".htm";
           document.body.appendChild(download_link);
           download_link.click();
